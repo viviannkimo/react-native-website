@@ -6,7 +6,7 @@ In some circustamces, you may want to have a Native Module that listen to some e
 
 Both are good use cases for emitting events from a Native Modules. In this guide, we'll see how to do that.
 
-## Emitting an Event when a New Key Added to the Storage
+## Emitting an Event when a new key added to the storage
 
 In this example, we will see how to emit an event when a new key is added to the storage. Changing the value of the key will not emit the event, but adding a new key will.
 
@@ -38,7 +38,7 @@ export interface Spec extends TurboModule {
   removeItem(key: string): void;
   clear(): void;
 
-+  readonly onKeyAdded: EventEmitter<KeyValuePair>;
++ readonly onKeyAdded: EventEmitter<KeyValuePair>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
@@ -56,7 +56,7 @@ Open the `NativeLocalStorage.js` file and update it as it follows:
 // @flow
 import type {TurboModule} from 'react-native';
 import {TurboModule, TurboModuleRegistry} from 'react-native';
-+ import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
++import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
 
 +export type KeyValuePair = {
 +  key: string,
@@ -68,7 +68,7 @@ export interface Spec extends TurboModule {
   getItem(key: string): ?string;
   removeItem(key: string): void;
   clear(): void;
-+  onKeyAdded: EventEmitter<KeyValuePair>
++ onKeyAdded: EventEmitter<KeyValuePair>
 }
 export default (TurboModuleRegistry.get<Spec>(
   'NativeLocalStorage'
@@ -138,8 +138,8 @@ Open the `App.tsx` file and modify it as it follows:
 ```diff title="App.tsx"
 import React from 'react';
 import {
-+  Alert,
-+  EventSubscription,
++ Alert,
++ EventSubscription,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -153,32 +153,32 @@ const EMPTY = '<empty>';
 
 function App(): React.JSX.Element {
   const [value, setValue] = React.useState<string | null>(null);
-+  const [key, setKey] = React.useState<string | null>(null);
-+  const listenerSubscription = React.useRef<null | EventSubscription>(null);
++ const [key, setKey] = React.useState<string | null>(null);
++ const listenerSubscription = React.useRef<null | EventSubscription>(null);
 
-+  React.useEffect(() => {
-+    listenerSubscription.current = NativeLocalStorage?.onKeyAdded((pair) => Alert.alert(`New key added: ${pair.key} with value: ${pair.value}`));
++ React.useEffect(() => {
++   listenerSubscription.current = NativeLocalStorage?.onKeyAdded((pair) => Alert.alert(`New key added: ${pair.key} with value: ${pair.value}`));
 
-+    return  () => {
-+      listenerSubscription.current?.remove();
-+      listenerSubscription.current = null;
-+    }
-+  }, [])
++   return  () => {
++     listenerSubscription.current?.remove();
++     listenerSubscription.current = null;
++   }
++ }, [])
 
   const [editingValue, setEditingValue] = React.useState<
     string | null
   >(null);
 
--  React.useEffect(() => {
--    const storedValue = NativeLocalStorage?.getItem('myKey');
--    setValue(storedValue ?? '');
--  }, []);
+- React.useEffect(() => {
+-   const storedValue = NativeLocalStorage?.getItem('myKey');
+-   setValue(storedValue ?? '');
+- }, []);
 
   function saveValue() {
-+    if (key == null) {
-+      Alert.alert('Please enter a key');
-+      return;
-+    }
++   if (key == null) {
++     Alert.alert('Please enter a key');
++     return;
++   }
     NativeLocalStorage?.setItem(editingValue ?? EMPTY, key);
     setValue(editingValue);
   }
@@ -189,42 +189,42 @@ function App(): React.JSX.Element {
   }
 
   function deleteValue() {
-+    if (key == null) {
-+      Alert.alert('Please enter a key');
-+      return;
-+    }
++   if (key == null) {
++     Alert.alert('Please enter a key');
++     return;
++   }
     NativeLocalStorage?.removeItem(key);
     setValue('');
   }
 
-+  function retrieveValue() {
-+    if (key == null) {
-+      Alert.alert('Please enter a key');
-+      return;
-+    }
-+    const val = NativeLocalStorage?.getItem(key);
-+    setValue(val);
-+  }
++ function retrieveValue() {
++   if (key == null) {
++     Alert.alert('Please enter a key');
++     return;
++   }
++   const val = NativeLocalStorage?.getItem(key);
++   setValue(val);
++ }
 
   return (
     <SafeAreaView style={{flex: 1}}>
       <Text style={styles.text}>
         Current stored value is: {value ?? 'No Value'}
       </Text>
-+      <Text>Key:</Text>
++     <Text>Key:</Text>
 +      <TextInput
-+        placeholder="Enter the key you want to store"
-+        style={styles.textInput}
-+        onChangeText={setKey}
-+      />
-+      <Text>Value:</Text>
++       placeholder="Enter the key you want to store"
++       style={styles.textInput}
++       onChangeText={setKey}
++     />
++     <Text>Value:</Text>
       <TextInput
         placeholder="Enter the text you want to store"
         style={styles.textInput}
         onChangeText={setEditingValue}
       />
       <Button title="Save" onPress={saveValue} />
-+      <Button title="Retrieve" onPress={retrieveValue} />
++     <Button title="Retrieve" onPress={retrieveValue} />
       <Button title="Delete" onPress={deleteValue} />
       <Button title="Clear" onPress={clearAll} />
     </SafeAreaView>
@@ -267,7 +267,7 @@ With everything prepared, we're going to start writing native platform code.
 <Tabs groupId="platforms" queryString defaultValue={constants.defaultPlatform}>
 <TabItem value="android" label="Android">
 
-Assuming you followed the guide for iOS described in the [Native Modules guide](//docs/turbo-native-modules-introduction?platforms=android&language=typescript#3-write-application-code-using-the-turbo-native-module), what's left to do is to plug the code that emit the events in your app.
+Assuming you followed the guide for iOS described in the [Native Modules guide](/docs/turbo-native-modules-introduction?platforms=android&language=typescript#3-write-application-code-using-the-turbo-native-module), what's left to do is to plug the code that emit the events in your app.
 
 To do so, you have to:
 
@@ -289,22 +289,22 @@ class NativeLocalStorageModule(reactContext: ReactApplicationContext) : NativeLo
   override fun getName() = NAME
 
   override fun setItem(value: String, key: String) {
-+    var shouldEmit = false
-+    if (getItem(key) != null) {
-+        shouldEmit = true
-+    }
++   var shouldEmit = false
++   if (getItem(key) != null) {
++       shouldEmit = true
++   }
     val sharedPref = getReactApplicationContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
     val editor = sharedPref.edit()
     editor.putString(key, value)
     editor.apply()
 
-+    if (shouldEmit == true) {
-+        val eventData = Arguments.createMap().apply {
-+            putString("key", key)
-+            putString("value", value)
-+        }
-+        emitOnKeyAdded(eventData)
-+    }
++   if (shouldEmit == true) {
++       val eventData = Arguments.createMap().apply {
++           putString("key", key)
++           putString("value", value)
++       }
++       emitOnKeyAdded(eventData)
++   }
   }
 
   override fun getItem(key: String): String? {
@@ -323,20 +323,7 @@ Secondly, we need to implement the logic that actually emit the event to JS. In 
 
 ## Step 5: Run Your App
 
-Now it's time to run your app.
-
-<Tabs groupId="package-manager" queryString defaultValue={constants.defaultPackageManager} values={constants.packageManagers}>
-<TabItem value="npm">
-```bash
-npm run ios
-```
-</TabItem>
-<TabItem value="yarn">
-```bash
-yarn run ios
-```
-</TabItem>
-</Tabs>
+If you now try to run your app, you should see this behavior.
 
 <center>
 <img src="/docs/assets/turbo-native-modules-events-android.gif" width="30%" height="30%"/>
@@ -345,7 +332,7 @@ yarn run ios
 </TabItem>
 <TabItem value="ios" label="iOS">
 
-Assuming you followed the guide for iOS described in the [Native Modules guide](//docs/turbo-native-modules-introduction?platforms=ios&language=typescript#3-write-application-code-using-the-turbo-native-module), what's left to do is to plug the code that emit the events in your app.
+Assuming you followed the guide for iOS described in the [Native Modules guide](/docs/turbo-native-modules-introduction?platforms=ios&language=typescript#3-write-application-code-using-the-turbo-native-module), what's left to do is to plug the code that emit the events in your app.
 
 To do so, you have to:
 
@@ -371,13 +358,13 @@ NS_ASSUME_NONNULL_END
 
 ```diff title="RCTNativeLocalStorage.mm"
  - (void)setItem:(NSString *)value key:(NSString *)key {
-+   BOOL shouldEmitEvent = NO;
-+   if (![self getItem:key]) {
-+     shouldEmitEvent = YES;
-+   }
-  [self.localStorage setObject:value forKey:key];
++  BOOL shouldEmitEvent = NO;
++  if (![self getItem:key]) {
++    shouldEmitEvent = YES;
++  }
+   [self.localStorage setObject:value forKey:key];
 
-+   if (shouldEmitEvent) {
++  if (shouldEmitEvent) {
 +    [self emitOnKeyAdded:@{@"key": key, @"value": value}];
 +  }
 }
@@ -389,20 +376,7 @@ In case of complex types, like the `KeyValuePair` we defined in the specs, Codeg
 
 ## Step 5: Run Your App
 
-Now it's time to run your app.
-
-<Tabs groupId="package-manager" queryString defaultValue={constants.defaultPackageManager} values={constants.packageManagers}>
-<TabItem value="npm">
-```bash
-npm run ios
-```
-</TabItem>
-<TabItem value="yarn">
-```bash
-yarn run ios
-```
-</TabItem>
-</Tabs>
+If you now try to run your app, you should see this behavior.
 
 <center>
 <img src="/docs/assets/turbo-native-modules-events-ios.gif" width="30%" height="30%"/>
